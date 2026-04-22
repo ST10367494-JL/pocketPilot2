@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PocketPilotTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // Change this to your new DashboardScreen
+                    //  DashboardScreen
                     DashboardScreen(innerPadding)
                 }
             }
@@ -52,7 +52,7 @@ fun BudgetCircle(percentage: Float, remainingAmount: String) {
         CircularProgressIndicator(
             progress = percentage,
             modifier = Modifier.fillMaxSize(),
-            color = if (percentage > 0.9f) Color.Red else PocketBlue, // Visual alert if near limit
+            color = if (percentage > 0.9f) Color.Red else PocketBlue, // Visual alert if  limit is about to be reached
             strokeWidth = 12.dp
         )
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -75,7 +75,7 @@ fun DashboardScreen(innerPadding: PaddingValues) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Your Circular Progress Component
+        //  Circular Progress Component
         BudgetCircle(percentage = 0.45f, remainingAmount = "R2800")
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -91,7 +91,7 @@ fun DashboardScreen(innerPadding: PaddingValues) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = { /* Navigate to Add Expense */ },
+            onClick = { /* Navigates to Add Expense */ },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = PocketBlue)
         ) {
