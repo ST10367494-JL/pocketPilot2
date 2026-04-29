@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -16,8 +17,12 @@ import com.pocketpilot.pocketpilot.data.models.Expense
 import com.pocketpilot.pocketpilot.utils.ExpenseCategories
 import java.io.File
 import java.io.IOException
+import coil.compose.AsyncImage
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.tooling.preview.Preview
+import com.pocketpilot.pocketpilot.ui.theme.PocketPilotTheme
 
 /**
  * Add Expense Screen for PocketPilot budget tracking app
@@ -39,7 +44,7 @@ fun AddExpenseScreen(
     var showDatePicker by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", LocalLocale.current.platformLocale)
 
     var currentPhotoPath by remember { mutableStateOf<String?>(null) }
 
@@ -99,7 +104,7 @@ fun AddExpenseScreen(
                 value = category,
                 onValueChange = {},
                 label = { Text("Category") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().menuAnchor(),
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) }
             )
@@ -155,10 +160,20 @@ fun AddExpenseScreen(
         }
 
         // Photo Preview
-        receiptPhotoUri?.let { uri ->
-            Spacer(modifier = Modifier.height(8.dp))
-            // Use AsyncImage or Coil for image loading
-            // This is simplified - add Coil dependency for actual image
+        if (receiptPhotoUri != null) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                AsyncImage(
+                    model = receiptPhotoUri,
+                    contentDescription = "Receipt Photo",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -209,4 +224,14 @@ fun DatePickerDialog(
         title = { Text("Select Date") },
         text = { Text("Date picker would go here") }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AddExpenseScreenPreview() {
+    PocketPilotTheme {
+        Surface {
+            AddExpenseScreen()
+        }
+    }
 }
