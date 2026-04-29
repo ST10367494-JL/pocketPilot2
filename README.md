@@ -23,7 +23,7 @@ Branch: ST10301110_Member2
 3. Reference list:
 
    *Jetpack Compose
-   https://m3.material.io/components
+   https://developer.android.com/develop/ui/compose/documentation
    Usage: Buttons, text fields, dropdown menu
 
    *Camera
@@ -33,6 +33,10 @@ Branch: ST10301110_Member2
    *File provider
    https://developer.android.com/reference/androidx/core/content/FileProvider
    Usage: Saving receipts to storage
+
+   *Date Picker
+   https://developer.android.com/guide/topics/ui/controls/pickers
+   Usage: Date/Time picker dialogs
 
    *Room Database
    --Waiting on member 1
