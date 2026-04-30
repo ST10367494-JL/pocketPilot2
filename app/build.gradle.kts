@@ -57,6 +57,10 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
     // If this project uses kotlin sources, use kotlin symbol processing (KSP)
     ksp(libs.androidx.room.compiler)
