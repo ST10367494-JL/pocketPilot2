@@ -1,87 +1,83 @@
-plugins {
-    alias(libs.plugins.android.application) // This covers "com.android.application"
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.ksp)
-    alias(libs.plugins.androidx.room)
-    // ADD THIS LINE FOR FIREBASE (Removed the duplicate android application line)
-    id("com.google.gms.google-services")
-}
+package com.pocketpilot.pocketpilot.ui.expense
 
-android {
-    namespace = "com.pocketpilot.pocketpilot"
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.pocketpilot.pocketpilot.ui.PocketViewModel
+import com.pocketpilot.pocketpilot.ui.theme.PocketBlue
+import com.pocketpilot.pocketpilot.data.entities.Expense
+import java.util.Date
 
-    compileSdkPreview = "Baklava"
+@Composable
+fun AddExpenseScreen(
+    viewModel: PocketViewModel,
+    onBack: () -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var amount by remember { mutableStateOf("") }
 
-    defaultConfig {
-        applicationId = "com.pocketpilot.pocketpilot"
-        minSdk = 25
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
+        Text(
+            text = "Add Expense",
+            style = MaterialTheme.typography.headlineMedium
+        )
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Description") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        OutlinedTextField(
+            value = amount,
+            onValueChange = { amount = it },
+            label = { Text("Amount") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                val expenseValue = amount.toDoubleOrNull()
+
+                if (title.isNotBlank() && expenseValue != null) {
+
+                    val expense = Expense(
+                        description = title,
+                        expense = expenseValue,
+                        dateAdded = Date()
+                    )
+
+                    viewModel.addExpense(expense)
+                    onBack()
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = PocketBlue)
+        ) {
+            Text("Save Expense")
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        OutlinedButton(
+            onClick = onBack,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Cancel")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    buildFeatures {
-        compose = true
-    }
-}
-
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
-dependencies {
-    // Core Android & Compose
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.ui)
-    implementation("androidx.navigation:navigation-compose:2.8.5")
-
-    // Room Database
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-
-    // If this project uses kotlin sources, use kotlin symbol processing (KSP)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-
-    // Image Loading
-    implementation("io.coil-kt:coil-compose:2.7.0")
-
-    // Firebase (Cleaned up duplicates)
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-    implementation("com.google.firebase:firebase-auth")
-
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.androidx.room.testing)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
