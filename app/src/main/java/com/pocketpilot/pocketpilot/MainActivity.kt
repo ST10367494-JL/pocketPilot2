@@ -1,9 +1,12 @@
 package com.pocketpilot.pocketpilot
 
 import android.os.Bundle
+import androidx.compose.ui.platform.LocalContext
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.pocketpilot.pocketpilot.RewardsActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,7 +33,7 @@ import com.pocketpilot.pocketpilot.ui.theme.PocketBlue
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 
-class MainActivity : ComponentActivity() {
+class RewardsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -97,5 +100,19 @@ fun DashboardScreen(innerPadding: PaddingValues) {
         ) {
             Text("+ Add Expense")
         }
+        Button(
+            onClick = {
+                val context = LocalContext.current
+                context.startActivity(Intent(context, RewardsActivity::class.java))
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = PocketBlue)
+        ) {
+            Text("Open Rewards")
+        }
+
+
+
+
     }
 }

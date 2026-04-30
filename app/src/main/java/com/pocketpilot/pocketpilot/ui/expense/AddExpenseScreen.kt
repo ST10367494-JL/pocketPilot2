@@ -190,6 +190,10 @@ fun AddExpenseScreen(
                         receiptPath = currentPhotoPath
                     )
                     // TODO: Save to Room DB
+
+                    val sharedPref = context.getSharedPreferences("Rewards", Context.MODE_PRIVATE)
+                    val currentPoints = sharedPref.getInt("points", 0)
+                    sharedPref.edit().putInt("points", currentPoints + 10).apply()
                     onExpenseSaved()
                 }
             },
