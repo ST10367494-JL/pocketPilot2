@@ -3,20 +3,18 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.androidx.room)
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.pocketpilot.pocketpilot"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+
+    compileSdkPreview = "Baklava"
 
     defaultConfig {
         applicationId = "com.pocketpilot.pocketpilot"
-        minSdk = 34
-        targetSdk = 36
+        minSdk = 25
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -39,14 +37,14 @@ android {
     buildFeatures {
         compose = true
     }
+}
 
-    room {
-        schemaDirectory("$projectDir/schemas")
-
-    }
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
+    // Core Android & Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -55,21 +53,28 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-
-    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.ui)
+    implementation("androidx.navigation:navigation-compose:2.8.5")
+    
+    // UI Compatibility
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // If this project uses kotlin sources, use kotlin symbol processing (KSP)
+    // Room Database
+    implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
-
-    // Kotlin extensions and coroutines support for Room
     implementation(libs.androidx.room.ktx)
 
+    // Image Loading
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation(libs.androidx.ui)
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-auth")
+
+    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.junit)

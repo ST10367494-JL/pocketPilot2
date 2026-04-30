@@ -1,16 +1,15 @@
 package com.pocketpilot.pocketpilot.data
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.pocketpilot.pocketpilot.data.entities.Category
+import kotlinx.coroutines.flow.Flow // Add this import
 
 @Dao
 interface CategoryDao {
 
+    // Changed to Flow so the Dashboard updates in real-time
     @Query("SELECT * FROM category")
-    fun getAll(): List<Category>
+    fun getAll(): Flow<List<Category>>
 
     @Query("SELECT * from category WHERE categoryId IN (:categoryIds)")
     fun findAllIds(categoryIds: IntArray): List<Category>
@@ -18,9 +17,9 @@ interface CategoryDao {
     @Query("SELECT * FROM category WHERE name LIKE :categoryName LIMIT 1")
     fun findByName(categoryName: String): Category
 
-    @Insert
-    fun insertAll(vararg categories: Category)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(category: Category)
 
     @Delete
-    fun delete(category: Category)
+    suspend fun delete(category: Category)
 }
