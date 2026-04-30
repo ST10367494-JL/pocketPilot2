@@ -90,3 +90,17 @@ Branch: ST10301110_Member2
 * Date Picker
     https://developer.android.com/guide/topics/ui/controls/pickers 
     Usage: Date and time selection dialogs
+
+AI Usage
+Used chatGPT to improvr the read me file ----  https://chatgpt.com/share/69f3760f-97cc-83ea-a935-76312fac3b19
+Google AI Mode was used for error handling see annexures below---
+<img width="451" height="392" alt="Screenshot 2026-04-30 145333" src="https://github.com/user-attachments/assets/1bc2f833-e54c-4e3a-8a85-0f46e1269635" />
+<img width="814" height="673" alt="Screenshot 2026-04-30 144540" src="https://github.com/user-attachments/assets/25f095f0-189e-41df-818d-c1886129ecac" />
+<img width="739" height="545" alt="Screenshot 2026-04-30 141616" src="https://github.com/user-attachments/assets/32a67232-8b20-443b-ab65-1e31c9e84f01" />
+<img width="1034" height="761" alt="Screenshot 2026-04-30 174015" src="https://github.com/user-attachments/assets/f786e112-61eb-4f3e-96e5-a0a931410a91" />
+<img width="1021" height="705" alt="Screenshot 2026-04-30 173949" src="https://github.com/user-attachments/assets/37cb6c18-b22a-4b20-a07e-dd6f2e6d5f61" />
+<img width="1182" height="767" alt="Screenshot 2026-04-30 173830" src="https://github.com/user-attachments/assets/4646078b-e118-4984-b3b6-d56ab094d01e" />
+<img width="1151" height="767" alt="Screenshot 2026-04-30 173703" src="https://github.com/user-attachments/assets/59d78486-a45b-45c7-b17a-dc8dd568e9e3" />
+<img width="1154" height="749" alt="Screenshot 2026-04-30 173625" src="https://github.com/user-attachments/assets/fbbc1f3c-a5d2-44b1-b286-fc19c70b2f8c" />
+<img width="1363" height="767" alt="Screenshot 2026-04-30 173550" src="https://github.com/user-attachments/assets/cc793123-fab4-4271-bce8-63fd7d14f469" />
+<img width="1335" height="710" alt="Screenshot 2026-04-30 173455" src="https://github.com/user-attachments/assets/c323d443-185e-45b7-90a7-2898164b2a7c" />
