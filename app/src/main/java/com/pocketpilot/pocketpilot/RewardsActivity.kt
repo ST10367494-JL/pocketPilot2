@@ -1,20 +1,33 @@
-package com.pocketpilot.pocketpilot
+package com.example.pocketpilot2
 
+import android.content.Context
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class RewardsActivity : AppCompatActivity() {
+
+    private var points = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_rewards)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        val pointsText = findViewById<TextView>(R.id.pointsText)
+        val addPointsButton = findViewById<Button>(R.id.addPointsButton)
+
+        val sharedPref = getSharedPreferences("Rewards", Context.MODE_PRIVATE)
+        points = sharedPref.getInt("points", 0)
+
+        pointsText.text = "Points: $points"
+
+        addPointsButton.setOnClickListener {
+            points += 10
+
+            sharedPref.edit().putInt("points", points).apply()
+
+            pointsText.text = "Points: $points"
         }
     }
 }
