@@ -64,6 +64,7 @@ dependencies {
 
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("androidx.compose.material:material-icons-extended")
 
     // Firebase (Cleaned up duplicates)
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
