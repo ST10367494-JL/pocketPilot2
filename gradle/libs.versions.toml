@@ -11,6 +11,10 @@ composeBom = "2024.09.00"
 roomVersion = "2.8.4"
 kspVersion = "2.3.4"
 ui = "1.11.0"
+appcompat = "1.6.1"
+material = "1.10.0"
+activity = "1.8.0"
+constraintlayout = "2.1.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +36,10 @@ androidx-room-compiler = {group = "androidx.room", name="room-compiler", version
 androidx-room-ktx = {group = "androidx.room", name="room-ktx", version.ref="roomVersion"}
 androidx-room-testing = {group = "androidx.room", name="room-testing", version.ref="roomVersion"}
 androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

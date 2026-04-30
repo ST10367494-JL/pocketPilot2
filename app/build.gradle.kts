@@ -1,9 +1,8 @@
 plugins {
-    alias(libs.plugins.android.application) // This covers "com.android.application"
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.androidx.room)
-    // ADD THIS LINE FOR FIREBASE (Removed the duplicate android application line)
     id("com.google.gms.google-services")
 }
 
@@ -56,6 +55,12 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.ui)
     implementation("androidx.navigation:navigation-compose:2.8.5")
+    
+    // UI Compatibility
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -65,7 +70,7 @@ dependencies {
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.7.0")
 
-    // Firebase (Cleaned up duplicates)
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-auth")
 
