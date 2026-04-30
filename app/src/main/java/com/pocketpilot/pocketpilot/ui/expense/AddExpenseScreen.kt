@@ -13,7 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import com.pocketpilot.pocketpilot.data.models.Expense
+import com.pocketpilot.pocketpilot.data.entities.Expense // Corrected import
 import com.pocketpilot.pocketpilot.utils.ExpenseCategories
 import java.io.File
 import java.io.IOException
@@ -23,18 +23,14 @@ import java.util.*
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.tooling.preview.Preview
 import com.pocketpilot.pocketpilot.ui.theme.PocketPilotTheme
-
-/**
- * Add Expense Screen for PocketPilot budget tracking app
- * References:
- * @see <a href="https://developer.android.com/jetpack/compose">Jetpack Compose Documentation</a>
- * @see <a href="https://developer.android.com/training/camera/photobasics">Camera Documentation</a>
- */
+import com.pocketpilot.pocketpilot.ui.PocketViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseScreen(
-    onExpenseSaved: () -> Unit = {}
+    viewModel: PocketViewModel,
+    onBack: () -> Unit = {}
 ) {
     var amount by remember { mutableStateOf("") }
     var category by remember { mutableStateOf(ExpenseCategories.categories[0]) }
@@ -45,10 +41,8 @@ fun AddExpenseScreen(
 
     val context = LocalContext.current
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", LocalLocale.current.platformLocale)
-
     var currentPhotoPath by remember { mutableStateOf<String?>(null) }
 
-    // Camera launcher
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
@@ -62,7 +56,6 @@ fun AddExpenseScreen(
         }
     }
 
-    // Date picker
     if (showDatePicker) {
         DatePickerDialog(
             onDateSelected = { year, month, dayOfMonth ->
@@ -81,7 +74,6 @@ fun AddExpenseScreen(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        // Amount Input
         OutlinedTextField(
             value = amount,
             onValueChange = { amount = it },
@@ -94,25 +86,16 @@ fun AddExpenseScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Category Dropdown
-        ExposedDropdownMenuBox(
-            expanded = false, // Would need proper state
-            onExpandedChange = {}
-        ) {
-            // Simplified - use a regular dropdown in real implementation
-            OutlinedTextField(
-                value = category,
-                onValueChange = {},
-                label = { Text("Category") },
-                modifier = Modifier.fillMaxWidth().menuAnchor(),
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) }
-            )
-        }
+        OutlinedTextField(
+            value = category,
+            onValueChange = {},
+            label = { Text("Category") },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Date Picker Button
         OutlinedButton(
             onClick = { showDatePicker = true },
             modifier = Modifier.fillMaxWidth()
@@ -122,7 +105,6 @@ fun AddExpenseScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Description
         OutlinedTextField(
             value = description,
             onValueChange = { description = it },
@@ -134,43 +116,28 @@ fun AddExpenseScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Camera Button
         Button(
             onClick = {
                 try {
                     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                    val imageFileName = "JPEG_${timeStamp}_"
                     val storageDir = context.getExternalFilesDir(null)
-                    val photoFile = File.createTempFile(imageFileName, ".jpg", storageDir)
+                    val photoFile = File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
                     currentPhotoPath = photoFile.absolutePath
-
-                    val photoURI = FileProvider.getUriForFile(
-                        context,
-                        "${context.packageName}.fileprovider",
-                        photoFile
-                    )
+                    val photoURI = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photoFile)
                     cameraLauncher.launch(photoURI)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
+                } catch (e: IOException) { e.printStackTrace() }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Take Receipt Photo")
         }
 
-        // Photo Preview
         if (receiptPhotoUri != null) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
+            Card(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
                 AsyncImage(
                     model = receiptPhotoUri,
-                    contentDescription = "Receipt Photo",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
+                    contentDescription = "Receipt",
+                    modifier = Modifier.fillMaxWidth().height(200.dp),
                     contentScale = ContentScale.Crop
                 )
             }
@@ -178,19 +145,20 @@ fun AddExpenseScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Save Button
+        // Fixed Save Button Logic
         Button(
             onClick = {
-                if (amount.toDoubleOrNull() != null && amount.toDouble() > 0) {
-                    val expense = Expense(
-                        amount = amount.toDouble(),
-                        category = category,
+                val amtValue = amount.toDoubleOrNull()
+                if (amtValue != null && amtValue > 0) {
+                    val newExpense = Expense(
                         description = description,
-                        date = selectedDate,
-                        receiptPath = currentPhotoPath
+                        expense = amtValue, // Matches your entity field
+                        receipt = currentPhotoPath,
+                        dateAdded = selectedDate
                     )
-                    // TODO: Save to Room DB
-                    onExpenseSaved()
+                    // Save to DB before navigating back
+                    viewModel.addExpense(newExpense)
+                    onBack()
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -205,33 +173,29 @@ fun DatePickerDialog(
     onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val year = remember { Calendar.getInstance().get(Calendar.YEAR) }
-    val month = remember { Calendar.getInstance().get(Calendar.MONTH) }
-    val day = remember { Calendar.getInstance().get(Calendar.DAY_OF_MONTH) }
-
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = { onDateSelected(year, month, day) }) {
-                Text("OK")
-            }
+            TextButton(onClick = {
+                val cal = Calendar.getInstance()
+                onDateSelected(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH))
+            }) { Text("OK") }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
+            TextButton(onClick = onDismiss) { Text("Cancel") }
         },
         title = { Text("Select Date") },
-        text = { Text("Date picker would go here") }
+        text = { Text("Click OK to select today's date.") }
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun AddExpenseScreenPreview() {
+fun AddExpensePreview() {
     PocketPilotTheme {
         Surface {
-            AddExpenseScreen()
+            // This is just for previewing, it won't actually save
+            Text("Preview Mode")
         }
     }
 }
