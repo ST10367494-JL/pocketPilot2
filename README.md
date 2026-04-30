@@ -1,8 +1,46 @@
-# Pocket Pilot
+PocketPilot - Member 2 Documentation
 
-A Budget Tracking App
+Student Name: Monwabisi Dlokweni
+Branch: ST10301110_Member2
 
+1. Files created
+  *Expense.kt
+  *ExpenseCategories.kt
+  *AddExpenseScreen.kt
 
-## For Developers
+2. Features Implemented
+   *Add Expense Form
+     Description: Amount, category, date, description inputs
+   *Category dropdown
+     expense categories
+   *Date picker
+   *Camera Integration
+     Capture and save receipt photos
+   *Input Validation
+     Validates amount > 0
+   *Unit tests
 
-See [Docs Folder](./docs) for development processes.
+3. Reference list:
+
+   *Jetpack Compose
+   https://developer.android.com/develop/ui/compose/documentation
+   Usage: Buttons, text fields, dropdown menu
+
+   *Camera
+   https://developer.android.com/training/camera/photobasics
+   Usage: Capturing receipt photos
+
+   *File provider
+   https://developer.android.com/reference/androidx/core/content/FileProvider
+   Usage: Saving receipts to storage
+
+   *Date Picker
+   https://developer.android.com/guide/topics/ui/controls/pickers
+   Usage: Date/Time picker dialogs
+
+   *Room Database
+   --Waiting on member 1
+   
+   
+   
+   
