@@ -9,27 +9,42 @@ import com.pocketpilot.pocketpilot.data.entities.Category
 import com.pocketpilot.pocketpilot.data.entities.Expense
 import com.pocketpilot.pocketpilot.data.entities.ExpenseWithCategoryCrossRef
 
+import com.pocketpilot.pocketpilot.data.CategoryDao
+
+import com.pocketpilot.pocketpilot.data.ExpenseDao
+
+
 @Database(
     entities = [
         Category::class,
         Expense::class,
         ExpenseWithCategoryCrossRef::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(PocketTypeConverters::class)
+
+
 abstract class PocketDb : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun expenseDao(): ExpenseDao
-}
 
-/**
- * Helper function to create a new database called pocketdb
- * @param context the Android context (use Activity.applicationContext)
- * @see android.content.ContextWrapper.getApplicationContext
- */
-fun createDatabase(context: Context): PocketDb {
-    return Room
-        .databaseBuilder<PocketDb>(context, "pocketdb")
-        .build()
+    companion object {
+        @Volatile
+        private var INSTANCE: PocketDb? = null
+
+        fun getDatabase(context: Context): PocketDb {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    PocketDb::class.java,
+                    "pocket_database"
+                ).fallbackToDestructiveMigration()
+                    .build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 }
