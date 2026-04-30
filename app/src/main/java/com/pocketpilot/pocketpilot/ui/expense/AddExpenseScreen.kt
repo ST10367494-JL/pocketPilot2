@@ -181,23 +181,33 @@ fun AddExpenseScreen(
         // Save Button
         Button(
             onClick = {
-                if (amount.toDoubleOrNull() != null && amount.toDouble() > 0) {
-                    val expense = Expense(
-                        amount = amount.toDouble(),
-                        category = category,
-                        description = description,
-                        date = selectedDate,
-                        receiptPath = currentPhotoPath
-                    )
-                    // TODO: Save to Room DB
+                val amt = amount.toDoubleOrNull()
 
-                    val sharedPref = context.getSharedPreferences("Rewards", Context.MODE_PRIVATE)
-                    val currentPoints = sharedPref.getInt("points", 0)
-                    sharedPref.edit().putInt("points", currentPoints + 10).apply()
-                    onExpenseSaved()
+                // Step 6: Validation
+                if (amt == null || amt <= 0) {
+                    Toast.makeText(context, "Amount must be greater than 0", Toast.LENGTH_SHORT).show()
+                    return@Button
                 }
+
+                // Create expense object
+                val expense = Expense(
+                    amount = amt,
+                    category = category,
+                    description = description,
+                    date = selectedDate,
+                    receiptPath = currentPhotoPath
+                )
+
+                // Step 5: Update rewards points
+                val sharedPref = context.getSharedPreferences("Rewards", Context.MODE_PRIVATE)
+                val currentPoints = sharedPref.getInt("points", 0)
+                sharedPref.edit().putInt("points", currentPoints + 10).apply()
+
+                // TODO: Save to Room DB
+                onExpenseSaved()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = PocketBlue)
         ) {
             Text("Save Expense")
         }
