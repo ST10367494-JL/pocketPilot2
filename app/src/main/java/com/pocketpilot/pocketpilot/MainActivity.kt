@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
 import com.pocketpilot.pocketpilot.data.PocketDb
 import com.pocketpilot.pocketpilot.ui.PocketViewModel
+import com.pocketpilot.pocketpilot.ui.AuthViewModel
 import com.pocketpilot.pocketpilot.ui.expense.AddExpenseScreen
 import com.pocketpilot.pocketpilot.ui.theme.PocketBlue
 import com.pocketpilot.pocketpilot.ui.theme.PocketPilotTheme
@@ -31,30 +32,55 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
                 val database = PocketDb.getDatabase(context)
 
-                // Initialize ViewModel with the Database Dao
-                val viewModel: PocketViewModel = viewModel(
+                // 1. Initialize ViewModels
+                val pocketViewModel: PocketViewModel = viewModel(
                     factory = object : ViewModelProvider.Factory {
                         override fun <T : ViewModel> create(modelClass: Class<T>): T {
                             return PocketViewModel(database.expenseDao()) as T
                         }
                     }
                 )
+                val authViewModel: AuthViewModel = viewModel()
 
-                // Observe Data
-                val expenseList by viewModel.expenses.collectAsState()
-                val totalSpent = expenseList.sumOf { it.expense } // Correctly using .expense from entity
-
-                val progress = (totalSpent / viewModel.monthlyBudget).toFloat()
-                val remaining = "R${(viewModel.monthlyBudget - totalSpent).toInt()}"
+                // 2. Observe Dashboard Data
+                val expenseList by pocketViewModel.expenses.collectAsState()
+                val totalSpent = expenseList.sumOf { it.expense }
+                val progress = (totalSpent / pocketViewModel.monthlyBudget).toFloat()
+                val remaining = "R${(pocketViewModel.monthlyBudget - totalSpent).toInt()}"
 
                 val navController = rememberNavController()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "dashboard",
+                        startDestination = "login", // App starts at Login
                         modifier = Modifier.padding(innerPadding)
                     ) {
+                        // --- AUTH ROUTES ---
+                        composable("login") {
+                            LoginScreen(
+                                viewModel = authViewModel,
+                                onNavigateToRegister = { navController.navigate("register") },
+                                onLoginSuccess = {
+                                    navController.navigate("dashboard") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable("register") {
+                            RegisterScreen(
+                                viewModel = authViewModel,
+                                onNavigateToLogin = { navController.navigate("login") },
+                                onRegisterSuccess = {
+                                    navController.navigate("dashboard") {
+                                        popUpTo("register") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+
+                        // --- MAIN APP ROUTES ---
                         composable("dashboard") {
                             DashboardScreen(
                                 totalSpent = "R${totalSpent.toInt()}",
@@ -66,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("expenses") {
                             AddExpenseScreen(
-                                viewModel = viewModel,
+                                viewModel = pocketViewModel,
                                 onBack = { navController.popBackStack() }
                             )
                         }

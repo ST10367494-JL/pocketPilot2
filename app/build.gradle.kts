@@ -1,21 +1,20 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.application) // This covers "com.android.application"
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.androidx.room)
+    // ADD THIS LINE FOR FIREBASE (Removed the duplicate android application line)
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.pocketpilot.pocketpilot"
 
-    // Updated to the preview version syntax required by your dependencies
     compileSdkPreview = "Baklava"
 
     defaultConfig {
         applicationId = "com.pocketpilot.pocketpilot"
-        // Matches your working emulator
         minSdk = 25
-        // targetSdk should stay at a stable version for now
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -41,12 +40,12 @@ android {
     }
 }
 
-// Room must stay outside the android block to avoid the "Suspicious receiver" error
 room {
     schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
+    // Core Android & Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -55,13 +54,22 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.ui)
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
+    // Room Database
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
+    // Image Loading
     implementation("io.coil-kt:coil-compose:2.7.0")
-    implementation(libs.androidx.ui)
+
+    // Firebase (Cleaned up duplicates)
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-auth")
+
+    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.junit)
@@ -70,7 +78,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
-    implementation("androidx.navigation:navigation-compose:2.8.5")
-
 }
