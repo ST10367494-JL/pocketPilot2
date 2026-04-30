@@ -64,6 +64,8 @@ dependencies {
     // Kotlin extensions and coroutines support for Room
     implementation(libs.androidx.room.ktx)
 
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation(libs.androidx.ui)
     testImplementation(libs.junit)
     testImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.junit)

@@ -10,6 +10,7 @@ kotlin = "2.0.21"
 composeBom = "2024.09.00"
 roomVersion = "2.8.4"
 kspVersion = "2.3.4"
+ui = "1.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +31,7 @@ androidx-room-runtime = {group = "androidx.room", name="room-runtime", version.r
 androidx-room-compiler = {group = "androidx.room", name="room-compiler", version.ref="roomVersion"}
 androidx-room-ktx = {group = "androidx.room", name="room-ktx", version.ref="roomVersion"}
 androidx-room-testing = {group = "androidx.room", name="room-testing", version.ref="roomVersion"}
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
