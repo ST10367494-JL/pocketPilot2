@@ -1,86 +1,174 @@
-plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.ksp)
-    alias(libs.plugins.androidx.room)
-    id("com.google.gms.google-services")
-}
+package com.pocketpilot.pocketpilot
 
-android {
-    namespace = "com.pocketpilot.pocketpilot"
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.*
+import com.pocketpilot.pocketpilot.data.PocketDb
+import com.pocketpilot.pocketpilot.ui.PocketViewModel
+import com.pocketpilot.pocketpilot.ui.AuthViewModel
+import com.pocketpilot.pocketpilot.ui.expense.AddExpenseScreen
+import com.pocketpilot.pocketpilot.ui.theme.PocketBlue
+import com.pocketpilot.pocketpilot.ui.theme.PocketPilotTheme
 
-    compileSdkPreview = "Baklava"
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            PocketPilotTheme {
+                val context = LocalContext.current
+                val database = PocketDb.getDatabase(context)
 
-    defaultConfig {
-        applicationId = "com.pocketpilot.pocketpilot"
-        minSdk = 25
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+                val pocketViewModel: PocketViewModel = viewModel(
+                    factory = object : ViewModelProvider.Factory {
+                        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                            @Suppress("UNCHECKED_CAST")
+                            return PocketViewModel(database.expenseDao()) as T
+                        }
+                    }
+                )
+                val authViewModel: AuthViewModel = viewModel()
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
+                val expenseList by pocketViewModel.expenses.collectAsState()
+                val totalSpent = expenseList.sumOf { it.expense }
+                val progress = if (pocketViewModel.monthlyBudget > 0) (totalSpent / pocketViewModel.monthlyBudget).toFloat() else 0f
+                val remaining = "R${(pocketViewModel.monthlyBudget - totalSpent).toInt()}"
+                val navController = rememberNavController()
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = "login",
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable("login") {
+                            LoginScreen(
+                                viewModel = authViewModel,
+                                onNavigateToRegister = { navController.navigate("register") },
+                                onLoginSuccess = {
+                                    navController.navigate("dashboard") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable("register") {
+                            RegisterScreen(
+                                viewModel = authViewModel,
+                                onNavigateToLogin = { navController.navigate("login") },
+                                onRegisterSuccess = {
+                                    navController.navigate("dashboard") {
+                                        popUpTo("register") { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable("dashboard") {
+                            DashboardScreen(
+                                totalSpent = "R${totalSpent.toInt()}",
+                                remaining = remaining,
+                                progress = progress,
+                                onNavigateToExpenses = { navController.navigate("expenses") },
+                                onNavigateToCategories = { navController.navigate("categories") }
+                            )
+                        }
+                        composable("expenses") {
+                            AddExpenseScreen(
+                                onExpenseSaved = { navController.popBackStack() }
+                            )
+                        }
+                        composable("categories") {
+                            CategoryScreen(onBack = { navController.popBackStack() })
+                        }
+                    }
+                }
+            }
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    buildFeatures {
-        compose = true
+}
+
+@Composable
+fun DashboardScreen(
+    totalSpent: String,
+    remaining: String,
+    progress: Float,
+    onNavigateToExpenses: () -> Unit,
+    onNavigateToCategories: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Dashboard", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(40.dp))
+
+        BudgetCircle(percentage = progress, remainingAmount = remaining)
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Monthly Budget: R5000", style = MaterialTheme.typography.titleMedium)
+                Text("Total Spent: $totalSpent", color = PocketBlue)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = onNavigateToExpenses,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = PocketBlue)
+        ) {
+            Text("+ Add Expense")
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        OutlinedButton(
+            onClick = onNavigateToCategories,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Manage Categories")
+        }
     }
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
+@Composable
+fun BudgetCircle(percentage: Float, remainingAmount: String) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(200.dp)) {
+        CircularProgressIndicator(
+            progress = { if (percentage > 1f) 1f else percentage },
+            modifier = Modifier.fillMaxSize(),
+            color = if (percentage > 0.9f) Color.Red else PocketBlue,
+            strokeWidth = 12.dp
+        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "${(percentage * 100).toInt()}% Used", style = MaterialTheme.typography.headlineSmall)
+            Text(text = "Remaining: $remainingAmount", style = MaterialTheme.typography.bodyMedium)
+        }
+    }
 }
 
-dependencies {
-    // Core Android & Compose
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.ui)
-    implementation("androidx.navigation:navigation-compose:2.8.5")
-    
-    // UI Compatibility
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-
-    // Room Database
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-
-    // Image Loading
-    implementation("io.coil-kt:coil-compose:2.7.0")
-
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-    implementation("com.google.firebase:firebase-auth")
-
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.androidx.room.testing)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+@Composable
+fun CategoryScreen(onBack: () -> Unit) {
+    Column(Modifier.fillMaxSize().padding(20.dp)) {
+        Text("Manage Categories", style = MaterialTheme.typography.headlineMedium)
+        Button(onClick = onBack, Modifier.padding(top = 20.dp)) { Text("Back to Dashboard") }
+    }
 }

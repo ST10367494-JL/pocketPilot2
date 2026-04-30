@@ -1,4 +1,4 @@
-package com.example.pocketpilot2
+package com.pocketpilot.pocketpilot
 
 import android.content.Context
 import android.os.Bundle
