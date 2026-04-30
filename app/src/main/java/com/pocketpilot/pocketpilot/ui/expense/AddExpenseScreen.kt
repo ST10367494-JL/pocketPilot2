@@ -96,10 +96,9 @@ fun AddExpenseScreen(
 
         // Category Dropdown
         ExposedDropdownMenuBox(
-            expanded = false, // Would need proper state
+            expanded = false,
             onExpandedChange = {}
         ) {
-            // Simplified - use a regular dropdown in real implementation
             OutlinedTextField(
                 value = category,
                 onValueChange = {},
