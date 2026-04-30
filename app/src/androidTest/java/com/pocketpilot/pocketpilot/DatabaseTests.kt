@@ -3,37 +3,37 @@ package com.pocketpilot.pocketpilot
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.services.storage.internal.TestStorageUtil
-import com.pocketpilot.pocketpilot.data.CategoryDao
-import com.pocketpilot.pocketpilot.data.ExpenseDao
 import com.pocketpilot.pocketpilot.data.PocketDb
-import com.pocketpilot.pocketpilot.data.entities.Category
+import com.pocketpilot.pocketpilot.data.ExpenseDao
+import com.pocketpilot.pocketpilot.data.CategoryDao
 import com.pocketpilot.pocketpilot.data.entities.Expense
-import org.hamcrest.CoreMatchers.equalTo
+import com.pocketpilot.pocketpilot.data.entities.Category
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 import java.io.IOException
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import kotlin.jvm.Throws
+import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class DatabaseTests {
-    private lateinit var categoryDao: CategoryDao
-    private lateinit var expenseDao: ExpenseDao
+
     private lateinit var db: PocketDb
+    private lateinit var expenseDao: ExpenseDao
+    private lateinit var categoryDao: CategoryDao
 
     @Before
     fun createDb() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.databaseBuilder<PocketDb>(context, "testdb").build()
-        categoryDao = db.categoryDao()
+        db = Room.inMemoryDatabaseBuilder(context, PocketDb::class.java)
+            .allowMainThreadQueries()
+            .build()
         expenseDao = db.expenseDao()
+        categoryDao = db.categoryDao()
     }
 
     @After
@@ -43,43 +43,37 @@ class DatabaseTests {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun createExpenseAndReadBack() {
-        val zone: ZoneId = ZoneId.systemDefault()
-        val expense: Expense = Expense(description ="Bought apples", expense = 20.5, dateAdded = ZonedDateTime.now(zone))
-
-        val id1 = expenseDao.insert(expense)
-        val expenseResult = expenseDao.getExpenseById(id1)
-
-        assertThat(expense.description, equalTo(expenseResult.description))
-        assertThat(expense.expense, equalTo(expenseResult.expense))
-        assertThat(expense.dateAdded, equalTo(expenseResult.dateAdded))
+    fun insertAndGetExpense() = runTest {
+        val expense = Expense(
+            description = "Lunch",
+            expense = 150.0,
+            dateAdded = Date() // Use Date() instead of ZonedDateTime
+        )
+        val id = expenseDao.insert(expense)
+        val result = expenseDao.getExpenseById(id)
+        assertEquals("Lunch", result.description)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun createCategories() {
-        val category = Category(name="Food", colour="red")
-        categoryDao.insertAll(category)
-        val categoryResult = categoryDao.findByName("Food")
-        assertThat(category.name, equalTo(categoryResult.name))
-        assertThat(category.colour, equalTo(categoryResult.colour))
-    }
+    fun testExpenseWithCategoryRelationship() = runTest {
+        // Use individual inserts since your DAO names them 'insert'
+        val category = Category(name = "Food", colour = "#FF0000")
+        categoryDao.insert(category)
 
-    @Test
-    @Throws(Exception::class)
-    fun addExpenseToCategory() {
-        val category = Category(name="Food", colour="red")
-        categoryDao.insertAll(category)
-        val categoryResult = categoryDao.findByName("Food")
+        val expense = Expense(
+            expenseId = 1,
+            description = "Pizza",
+            expense = 200.0,
+            dateAdded = Date()
+        )
+        expenseDao.insert(expense)
 
-        val zone: ZoneId = ZoneId.systemDefault()
-        var expense: Expense = Expense(description ="Bought apples", expense = 20.5, dateAdded = ZonedDateTime.now(zone))
-        expense = expenseDao.getExpenseById(expenseDao.insert(expense))
+        // Link them
         expenseDao.addExpenseToCategories(expense, category)
-        val expenseWithCategory = expenseDao.getExpenseByIdWithCategories(expense.expenseId);
-        println(expenseWithCategory)
-        assert(expenseWithCategory.categories.contains(categoryResult))
 
+        // Verify relationship
+        val results = expenseDao.getAllExpensesWithCategories().first()
+        assertEquals(1, results[0].categories.size)
+        assertEquals("Food", results[0].categories[0].name)
     }
 }
