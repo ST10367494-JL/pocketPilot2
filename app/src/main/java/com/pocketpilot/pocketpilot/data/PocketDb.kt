@@ -40,7 +40,7 @@ abstract class PocketDb : RoomDatabase() {
                     context.applicationContext,
                     PocketDb::class.java,
                     "pocket_database"
-                ).fallbackToDestructiveMigration()
+                )
                     .build()
                 INSTANCE = instance
                 instance
