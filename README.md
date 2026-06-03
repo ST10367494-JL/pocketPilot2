@@ -1,80 +1,110 @@
-📱 PocketPilot
+# 📱 PocketPilot
 
-PocketPilot is a simple and effective personal finance tracking app that helps users manage their spending, stay within budget, and keep records of their expenses.
+PocketPilot is a modern, responsive mobile personal finance tracking companion engineered using an offline-first architecture. It synchronizes local persistence data models with live cloud servers while providing advanced behavioral analytics and budget boundary visualizations.
 
-⸻
 
-✨ Features
 
-* 🔐 Safe Login
-    Secure registration and login system powered by Firebase Authentication.
-* 📱 Offline First
-    All data is stored locally using Room Database, allowing the app to work without an internet connection.
-* 📊 Live Dashboard
-    A visual budget circle that updates instantly whenever a new expense is added.
-* 📸 Camera Integration
-    Capture and store photos of receipts for record-keeping.
+## ✨ Core System Features
 
-⸻
+* **🔐 Secure Authentication:** User registration and login pathways powered by remote Firebase Authentication.
+* **📱 Hybrid Sync Architecture:** Dual-engine framework combining local Room Database storage with Cloud Firestore snapshot listeners for seamless real-time data streaming.
+* **📊 Predictive Analytics & Graphing:** Programmatic canvas vector graph plotting real-time spending alongside budget bounds, complete with a monthly target compliance assessment system.
+* **📸 Hardware Camera Integration:** Local bitmap verification tracking allowing users to capture and preview receipt photo assets instantly on-device.
+* **🚀 Automation & Quality Traceability:** Built-in Android logging sub-systems matched with a continuous integration GitHub Actions pipeline workflow.
 
-🛠️ Built With
 
-* Kotlin – The core programming language used to build the app
-* Jetpack Compose – For building a modern and responsive UI
-* Room Database (Room DB) – For local data storage
-* Firebase – For authentication and backend services
 
-⸻
+## 🛠️ Built With
 
-⚙️ How to Run the Project
+* **Kotlin** – Core language syntax and asynchronous coroutine state flow operations.
+* **Jetpack Compose** – Declarative Material 3 UI component building blocks.
+* **Room Database** – Hardware disk persistence layer for offline usability.
+* **Firebase (Auth & Cloud Firestore)** – Cloud identity validation and continuous real-time dataset clustering.
+* **GitHub Actions** – Continuous integration workflow automated environment verification.
 
-1. Open the project in Android Studio (latest version recommended)
-2. Add your google-services.json file to the app/ folder
-3. Click Run ▶️
-4. Use:
-    * An emulator, or
-    * A physical Android device (API level 25 or higher)
 
-⸻
 
-👨‍💻 Member 2 Contribution
+## ⚙️ How to Run the Project
 
-Student Name: Monwabisi Dlokweni
-Branch: ST10301110_Member2
+1. Open the source project root folder inside **Android Studio (Ladybug or newer recommended)**.
+2. Ensure your valid, registered `google-services.json` file is present inside the local `app/` folder directory.
+3. Click the **"Sync Project with Gradle Files"** toolbar index option and allow dependencies to compile.
+4. **Mandatory PoE Execution Rule:** Connect a **Physical Android Handset Device** via USB debugging (API Level 25 or higher) and click **Run ▶️** (Emulators are strictly prohibited for Part 3 final grading evaluation).
 
-📂 Files Created
 
-* Expense.kt
-* ExpenseCategories.kt
-* AddExpenseScreen.kt
 
-⸻
+## 👨‍💻 Member 2 Contribution
 
-🚀 Features Implemented
+* **Student Name:** Monwabisi Dlokweni  
+* **Branch Git Identifier:** `ST10301110_Member2`
 
-* Add Expense Form
-    Inputs for amount, category, date, and description
-* Category Dropdown
-    Allows users to select predefined expense categories
-* Date Picker
-    Enables easy selection of dates
-* Camera Integration
-    Capture and save receipt images
-* Input Validation
-    Ensures expense amount is greater than 0
-* Unit Testing
-    Basic tests implemented for validation and functionality
+### 📂 Files Managed & Maintained
+* `com.pocketpilot.pocketpilot.data.entities.Expense.kt`
+* `com.pocketpilot.pocketpilot.ui.expense.AddExpenseScreen.kt`
+* `com.pocketpilot.pocketpilot.ui.expense.ExpensesListScreen.kt`
+* `com.pocketpilot.pocketpilot.SpendingAnalyticsScreen.kt`
+* `com.pocketpilot.pocketpilot.ui.PocketViewModel.kt`
 
-⸻
+### 🚀 Advanced Features Implemented & Documented
 
-📚 References (Harvard Style)
+* **Add Expense Form Matrix:** Captures secure inputs for transaction amount values, structural category drops, date metadata, and item note descriptions.
+* **Category Selection Component:** Dropdown mapping menu allowing users to flag transactions under predefined tracking identifiers.
+* **Dynamic Budget Usage Row Indicator:** Dashboard metric converting raw aggregate variables into direct percentage progression labels (`% Used`).
+* **Advanced Category Bar Graph Engine:** Native `Canvas` drawing workspace parsing real-time Room lists into distinct horizontal data column blocks.
+* **Target Boundary Indicator Lines:** Vector graph drawing utilizing dashed path effects to overlay a **🟢 Minimum Savings Goal Line (R400)** and a **🔴 Maximum Spending Cap Line (R2000)** directly on the analytics canvas interface.
+* **Monthly Compliance Assessment Evaluation:** Automated conditional algorithm analyzing category totals against target boundaries to render an adaptive, color-coded trailing performance status notification block.
+* **Hardware Result Camera Launcher:** Native activity result connection pipeline (`TakePicturePreview`) initializing device cameras to preview verification receipt bitmaps.
+* **Production Status Logging Framework:** Explicit `Log.d`, `Log.i`, and `Log.e` trace flags reporting execution events and network database mutations straight into the system Logcat panel.
+* **CI Automation Action YAML Script:** Complete automated environment check file (`.github/workflows/android.yml`) managing headless builds and testing operations.
 
-* Firebase (2024) Firebase Authentication. Available at: https://firebase.google.com (Accessed: 30 April 2026)
-* Google Developers (2024) Jetpack Compose UI Tools. Available at: https://developer.android.com (Accessed: 30 April 2026)
-* Google Developers (2024) Save data in a local database using Room. Available at: https://developer.android.com  (Accessed: 30 April 2026)
-* Smit, R. (2017) Reference Techniques: Harvard Style. Available at: https://www.uj.ac.za (Accessed: 30 April 2026)
 
-⸻
+
+## 📚 Academic References (Harvard Style)
+
+Android Developers, 2024. Connect your app to the network: Manifest Permissions. [Online]  
+Available at: https://android.com  
+[Accessed 2 June 2026].
+
+Android Developers, 2024. Build Layouts with Jetpack Compose. [Online]  
+Available at: https://android.com  
+[Accessed 3 June 2026].
+
+Android Developers, 2024. Save data in a local database using Room. [Online]  
+Available at: https://android.com  
+[Accessed 3 June 2026].
+
+Android Developers, 2024. Organizing Package Hierarchies and Component Layout Vectors in Android Studio. [Online]  
+Available at: https://android.com  
+[Accessed 3 June 2026].
+
+Android Developers, 2026. Write and View System Logs with Logcat tools. [Online]  
+Available at: https://android.com  
+[Accessed 3 June 2026].
+
+Cloud Firestore, 2026. Firestore Android Setup Documentation. [Online]  
+Available at: https://google.com  
+[Accessed 3 June 2026].
+
+Firebase Auth, 2026. Get Started with Firebase Authentication on Android. [Online]  
+Available at: https://google.com  
+[Accessed 2 June 2026].
+
+Firebase BoM, 2026. Firebase Android BoM (Bill of Materials) Release Notes. [Online]  
+Available at: https://google.com  
+[Accessed 1 June 2026].
+
+GitHub Actions, 2026. Building and Testing Android Applications via Continuous Integration. [Online]  
+Available at: https://github.com   
+[Accessed 3 June 2026].
+
+Jetpack Canvas, 2024. Graphics and Drawing operations inside Compose UI. [Online]  
+Available at: https://android.com  
+[Accessed 3 June 2026].
+
+Smit, R., 2017. Reference Techniques: Harvard Style. [Online]  
+Available at: https://www.uj.ac.za  
+[Accessed 30 April 2026].
+
 
 📖 Additional Technical References
 
