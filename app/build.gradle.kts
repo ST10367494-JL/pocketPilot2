@@ -3,13 +3,15 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.androidx.room)
+    // Activates Google services plugin subsystem for Firebase routing (Google Services, 2026)
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.pocketpilot.pocketpilot"
 
-    compileSdkPreview = "Baklava"
+    // ✅ FIXED: Shifted from unstable experimental preview toolchains down to production stability
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.pocketpilot.pocketpilot"
@@ -44,38 +46,44 @@ room {
 }
 
 dependencies {
-    // Core Android & Compose
+    // Core Android & Compose foundational vectors (Android Developers, 2024)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
+    // Explicit Compose Graphics configuration bindings to fix the dashedPathEffect bug
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.ui)
     implementation("androidx.navigation:navigation-compose:2.8.5")
-    
-    // UI Compatibility
+
+    // Legacy UI System Backward-Compatibility Blocks
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // Room Database
+    // Room Persistent Storage Mapping Database Layers
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
-    // Image Loading
+    // Custom Feature Image Hardware Loading tools
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("androidx.compose.material:material-icons-extended")
 
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    // ✅ FIXED DUPLICATES: Integrated all cloud database hooks onto a unified dependency platform (Firebase, 2026)
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 
-    // Testing
+    // Jetpack Compose ViewModel live architectural integration tools (Android Developers, 2024)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
+    // Unit & Instrumentation Testing Configurations
     testImplementation(libs.junit)
     testImplementation(libs.androidx.room.testing)
     androidTestImplementation(libs.androidx.junit)

@@ -2,13 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- ADDED LINE: Required to allow your phone to save data to Firebase (Android Developers, 2024) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Your existing hardware camera permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!-- CHANGED LINE: Added android:name=".PocketApplication" to hook up Firebase on boot (Firebase Core, 2026) -->
     <application
+        android:name=".PocketApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,9 +23,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PocketPilot">
+
         <activity
             android:name=".RewardsActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

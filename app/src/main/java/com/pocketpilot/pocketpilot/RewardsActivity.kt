@@ -1,10 +1,11 @@
-package com.example.pocketpilot2
+package com.example.pocketpilot
 
 import android.content.Context
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.pocketpilot.pocketpilot.R
 
 class RewardsActivity : AppCompatActivity() {
 

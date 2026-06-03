@@ -1,87 +1,139 @@
-plugins {
-    alias(libs.plugins.android.application) // This covers "com.android.application"
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.ksp)
-    alias(libs.plugins.androidx.room)
-    // ADD THIS LINE FOR FIREBASE (Removed the duplicate android application line)
-    id("com.google.gms.google-services")
-}
+package com.pocketpilot.pocketpilot.ui.expense
 
-android {
-    namespace = "com.pocketpilot.pocketpilot"
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.text.KeyboardOptions
+import com.pocketpilot.pocketpilot.ui.PocketViewModel
 
-    compileSdkPreview = "Baklava"
+/**
+ * Data input form screen allowing users to track and record transactions.
+ * Saves values directly onto Cloud Firestore database instances [Firebase, 2026].
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddExpenseScreen(viewModel: PocketViewModel, onBack: () -> Unit) {
+    // Input component field tracker state variables [Android Developers, 2024]
+    var amountText by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("Groceries") }
+    var noteText by remember { mutableStateOf("") }
 
-    defaultConfig {
-        applicationId = "com.pocketpilot.pocketpilot"
-        minSdk = 25
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    val categoriesList = listOf("Groceries", "Transport", "Food", "Entertainment", "Other")
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Add Expense", fontWeight = FontWeight.Bold, color = Color(0xFF1E3A8A)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Go Back")
+                    }
+                }
             )
         }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Wireframe Form Component 1: Monetary Transaction Amount Entry Field Box
+            OutlinedTextField(
+                value = amountText,
+                onValueChange = { amountText = it },
+                label = { Text("Amount (ZAR)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Wireframe Form Component 2: Structural Category Dropdown Selector Component Box
+            Box(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = selectedCategory,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Category") },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Expand Menu Options",
+                            modifier = Modifier.clickable { dropdownExpanded = true }
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp)
+                )
+
+                DropdownMenu(
+                    expanded = dropdownExpanded,
+                    onDismissRequest = { dropdownExpanded = false },
+                    modifier = Modifier.fillMaxWidth(0.85f)
+                ) {
+                    categoriesList.forEach { categoryItemName ->
+                        DropdownMenuItem(
+                            text = { Text(categoryItemName) },
+                            onClick = {
+                                selectedCategory = categoryItemName
+                                dropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Wireframe Form Component 3: Brief Text Note Description Memo Box
+            OutlinedTextField(
+                value = noteText,
+                onValueChange = { noteText = it },
+                label = { Text("Reference / Note Description") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Verification execution button triggering state collection mapping tasks
+            Button(
+                onClick = {
+                    val parsedAmountValue = amountText.toFloatOrNull() ?: 0f
+                    if (parsedAmountValue > 0f) {
+                        // Push standard structured parameters up onto the cloud storage platform
+                        viewModel.addExpenseToCloud(
+                            amount = parsedAmountValue,
+                            category = selectedCategory,
+                            note = noteText
+                        )
+                        onBack() // Step backward along navigation backstack history lanes
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E3A8A)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text("Save Expense Record", fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold)
+            }
+        }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    buildFeatures {
-        compose = true
-    }
-}
-
-room {
-    schemaDirectory("$projectDir/schemas")
-}
-
-dependencies {
-    // Core Android & Compose
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.ui)
-    implementation("androidx.navigation:navigation-compose:2.8.5")
-
-    // Room Database
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
-
-    // If this project uses kotlin sources, use kotlin symbol processing (KSP)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-
-    // Image Loading
-    implementation("io.coil-kt:coil-compose:2.7.0")
-
-    // Firebase (Cleaned up duplicates)
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-    implementation("com.google.firebase:firebase-auth")
-
-    // Testing
-    testImplementation(libs.junit)
-    testImplementation(libs.androidx.room.testing)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
